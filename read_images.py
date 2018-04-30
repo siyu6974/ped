@@ -29,15 +29,23 @@ with open('projetpers/label.txt') as f:
     lines = f.readlines()
     
 
+sum_height = 0
+sum_width = 0
+
 for i in range(0, len(lines)):
     tmp_img = train_image_list[i]
     line = lines[i].split(" ")
     x = int(line[1])
     y = int(line[2])
     width = int(line[3])
+
     height = int(line[4])
+    
+    sum_width += width
+    sum_height += height
+    
     cropped_img = tmp_img[y:y+height, x:x+width]
-    resized_img = resize(cropped_img, (256, 256))
+    resized_img = resize(cropped_img, (48, 48))
     train_positive_image_list.append(resized_img.reshape(-1))
 
 # create 3 negative images for each raw_image
@@ -46,16 +54,16 @@ for i in range(0, len(lines)):
     
     
     cropped_img = tmp_img[y:, int((2*x+width)/2):]
-    resized_img = resize(cropped_img, (256, 256))
+    resized_img = resize(cropped_img, (48, 48))
     train_negative_image_list.append(resized_img.reshape(-1))
     
     
     cropped_img = tmp_img[0:x, 0:y]
-    resized_img = resize(cropped_img, (256, 256))
+    resized_img = resize(cropped_img, (48, 48))
     train_negative_image_list.append(resized_img.reshape(-1))
    
     cropped_img = tmp_img[y+height:, x+width:]
-    resized_img = resize(cropped_img, (256, 256))
+    resized_img = resize(cropped_img, (48, 48))
     train_negative_image_list.append(resized_img.reshape(-1))
 
 
@@ -76,6 +84,9 @@ joblib.dump(clf, 'm_model.pkl')
 
 
 #clf = joblib.load('m_model.pkl') 
+
+#the ratio of sliding window is height : width = 1 : 2.3
+
 
 
 
