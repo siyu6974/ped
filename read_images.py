@@ -9,12 +9,9 @@ Created on Fri Apr 27 22:45:47 2018
 
 from skimage import io
 import glob
-import numpy
+import numpy as np
 from sklearn.utils import shuffle
-from matplotlib import pyplot as plt
 from skimage.transform import resize
-from sklearn import svm
-from sklearn.externals import joblib
 
 
 train_image_list = []
@@ -42,7 +39,7 @@ for i in range(0, len(lines)):
 
 # create 3 negative images for each raw_image
  
-    max_height, max_width, deep= tmp_img.shape
+    max_height, max_width, deep = tmp_img.shape
     
     
     cropped_img = tmp_img[y:, int((2*x+width)/2):]
@@ -61,21 +58,25 @@ for i in range(0, len(lines)):
 
 #    io.imshow(cropped_img)
 #   plt.show()
-y_positive = numpy.ones(len(train_positive_image_list))
-y_negative = numpy.zeros(len(train_negative_image_list))
+y_positive = np.ones(len(train_positive_image_list))
+y_negative = np.zeros(len(train_negative_image_list))
+train_positive_image_list = np.array(train_positive_image_list)
+train_negative_image_list = np.array(train_negative_image_list)
+X_train = np.concatenate((train_positive_image_list, train_negative_image_list))
+Y_train = np.concatenate((y_positive, y_negative), axis=0)
 
-X_train = train_positive_image_list + train_negative_image_list
-Y_train = numpy.concatenate((y_positive, y_negative), axis=0)
-
-Y_train = Y_train.tolist()
 X_train, Y_train = shuffle(X_train, Y_train)
 
-clf = svm.SVC(kernel='linear', C=1).fit(X_train, Y_train)
 
-joblib.dump(clf, 'm_model.pkl') 
-
-
-#clf = joblib.load('m_model.pkl') 
-
-
-
+# garbage collector
+vars_to_keep = ['X_train', 'Y_train']
+internal_vars = ['name', 'internal_vars','vars_to_keep','In', 'Out', 'get_ipython', 'exit', 'get_ipython', 'quit']
+#
+for name in dir():
+    if not name.startswith('_') and name not in internal_vars:
+        if name not in vars_to_keep:
+            del globals()[name]
+            print(name)
+del vars_to_keep
+del internal_vars
+del name
