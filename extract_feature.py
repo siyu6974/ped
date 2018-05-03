@@ -9,25 +9,32 @@ Created on Mon Apr 30 21:16:49 2018
 
 import numpy as np
 from skimage.feature import hog
+from skimage import color
+symbols_to_keep = dir()
+
+def get_features(img):
+    if img.shape[-1]==3:
+        img = color.rgb2gray(img)
+    return hog(img, orientations=8, pixels_per_cell=(4, 4), 
+               cells_per_block=(3, 3),block_norm='L2-Hys', transform_sqrt=True)
 
 
-tmp_X = np.zeros((X_train.shape[0], 133920))
+
+tmp_X = np.zeros((X_train.shape[0], get_features(X_train[0]).shape[0]))
 
 for i,d in enumerate(X_train):
-    fd = hog(d, orientations=8, pixels_per_cell=(4, 4), 
-                    cells_per_block=(3, 3),block_norm='L2-Hys', transform_sqrt=True)
-    tmp_X[i] = fd
+    tmp_X[i] = get_features(d)
     
 X_train = tmp_X
     
 # garbage collector
-vars_to_keep = ['X_train', 'Y_train']
-internal_vars = ['name', 'internal_vars', 'vars_to_keep', 'In', 'Out', 'get_ipython', 'exit', 'get_ipython', 'quit']
+symbols_to_keep += ['X_train', 'Y_train', 'get_features']
+internal_vars = ['name', 'internal_vars', 'symbols_to_keep', 'In', 'Out', 'get_ipython', 'exit', 'get_ipython', 'quit']
 #
 for name in dir():
     if not name.startswith('_') and name not in internal_vars:
-        if name not in vars_to_keep:
+        if name not in symbols_to_keep:
             del globals()[name]
-del vars_to_keep
+del symbols_to_keep
 del internal_vars
 del name

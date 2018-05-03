@@ -5,6 +5,7 @@ Created on Sun Apr 29 15:58:49 2018
 
 @author: Siyu Zhang
 """
+SAMPLE_SIZE = (128,64)
 
 runfile('read_images.py')
 runfile('extract_feature.py')
@@ -27,8 +28,8 @@ from sklearn.decomposition import RandomizedPCA, PCA
 #print("Accuracy: %0.3f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 # with hog, 0.856
 #
-#pca = PCA().fit(X_train)
-#plt.plot(np.cumsum(pca.explained_variance_ratio_))
+pca = PCA().fit(X_train)
+plt.plot(np.cumsum(pca.explained_variance_ratio_))
 
 pca = PCA(svd_solver='randomized', n_components=111, whiten=True, random_state=233)
 #pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)

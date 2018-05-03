@@ -16,10 +16,14 @@ from skimage.transform import resize
 from sklearn import svm
 from sklearn.externals import joblib
 
-clf = joblib.load('m_model.pkl') 
+#clf = joblib.load('m_model.pkl') 
+clf = model
 
 def non_max_suppression(all_areas_list, geometry_info):
-    
+    """
+    all_areas_list = [{x1,x2,y1,y2,[]}]
+    geometry_info = [x,y,w,h]
+    """
     m_x1 = geometry_info[0]
     m_y1 = geometry_info[1]
     m_x2 = geometry_info[0]+geometry_info[2]
@@ -56,7 +60,19 @@ def non_max_suppression(all_areas_list, geometry_info):
 
 
 def sliding_window(img):
+    H,W = SAMPLE_SIZE
     
+    while img.shape[0]>=H and img.shape[1]>=W:
+        x = y = 0
+        while y+H <= img.shape[0] and x+W <= img.shape[1]:
+            win = img[y:y+H, x:x+W]
+            
+            if clf.predict(win):
+                geometry_info = [x,y,W,H]
+                all_areas_list = non_max_suppression(all_areas_list, geometry_info)
+            
+        img = img
+
     
     all_areas_list = []
     max_height, max_width, deep= img.shape
@@ -79,7 +95,7 @@ def sliding_window(img):
             while  (y+height)<max_height:
                 label_list.append([x, y, width, height])
                 cropped_img = img[y:y+height, x:x+width]
-                resized_img = resize(cropped_img, (48, 48))
+                resized_img = resize(cropped_img, SAMPLE_SIZE)
                 test_windows.append(resized_img.reshape(-1)) 
                 y += single_movement
             x += single_movement
@@ -100,9 +116,8 @@ def main():
     for filename in sorted(glob.glob('projetpers/test/*.jpg')): #assuming gif
         print(filename)
         im=io.imread(filename)
-        cropped_img = im[245:771, 124:353]
-        io.imshow(cropped_img)
-        plt.show()
+#        io.imshow(cropped_img)
+#        plt.show()
         sliding_window(im)
         
         
