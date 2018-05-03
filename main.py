@@ -30,12 +30,12 @@ from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 
 
-pca = PCA(svd_solver='randomized', n_components=111, whiten=True, random_state=233)
+pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
 #pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
-svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf', C=34)
+svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf', C=80)
 model = make_pipeline(pca, svc)
 
-s = cross_val_score(model,X_train,Y_train,n_jobs=4)
+s = cross_val_score(model,X_train,Y_train,n_jobs=4,cv=8)
 print("Accuracy: %0.3f (+/- %0.2f)" % (s.mean(), s.std() * 2))
 
 model.fit(X_train, Y_train)
@@ -78,13 +78,17 @@ def sliding_window(img, scale_step=0.8):
         for y in range(0, img.shape[0] - H, ystep):
             for x in range(0, img.shape[1] - W, xstep):
                 window = img[y:y + H, x:x + W]
-                yield (int(y*scale), int(x*scale), int(H*scale), int(W*scale)), window
+                yield (int(y/scale), int(x/scale), int(H/scale), int(W/scale)), window
         img = rescale(img, scale_step)
-        scale = scale/scale_step
+        scale = scale*scale_step
             
 test_file_names = sorted(glob.glob('projetpers/test/*.jpg'))
 im=io.imread(test_file_names[1])
 geos, patches = zip(*sliding_window(im))
+geos = list(geos)
+geos.reverse()
+patches = list(patches)
+patches.reverse()
 
 patches_hog = np.array([get_features(patch) for patch in patches])
 

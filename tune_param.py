@@ -22,22 +22,22 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 from sklearn.decomposition import RandomizedPCA, PCA
 
-
+#
 #clf = svm.SVC(kernel='linear', C=1)
 #scores = cross_val_score(clf, X_train, Y_train,n_jobs=4, cv=5)
 #print("Accuracy: %0.3f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 # with hog, 0.856
 #
-pca = PCA().fit(X_train)
-plt.plot(np.cumsum(pca.explained_variance_ratio_))
+#pca = PCA().fit(X_train)
+#plt.plot(np.cumsum(pca.explained_variance_ratio_))
 
-pca = PCA(svd_solver='randomized', n_components=111, whiten=True, random_state=233)
+pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
 #pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
 svc = svm.SVC(class_weight='balanced')
 model = make_pipeline(pca, svc)
 
-param_grid = {'svc__C':[0.001, 0.01, 0.1, 1, 10, 100],
-              'svc__gamma':[0.001, 0.01, 0.1, 1, 'auto'],
+param_grid = {'svc__C':[0.001, 0.01, 1, 10, 100],
+              'svc__gamma':[0.001, 0.01, 0.1, 'auto'],
               'svc__kernel':['linear', 'rbf']}
 grid = GridSearchCV(model, param_grid, n_jobs=8)
 grid.fit(X_train, Y_train)
@@ -51,12 +51,12 @@ print(grid.best_score_)
 # score=0.899
 
 
-pca = PCA(svd_solver='randomized', n_components=111, whiten=True, random_state=233)
+pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
 #pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
 svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf')
 model = make_pipeline(pca, svc)
 
-param_grid = {'svc__C':[22,24,26,28, 30,32,34, 36]}
+param_grid = {'svc__C':[20,50, 80, 200,500]}
 grid = GridSearchCV(model, param_grid, n_jobs=8)
 grid.fit(X_train, Y_train)
 print(grid.best_params_)

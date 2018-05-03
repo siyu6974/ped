@@ -11,7 +11,7 @@ from skimage import io, util, color
 import glob
 import numpy as np
 from sklearn.utils import shuffle
-from skimage.transform import resize
+from skimage.transform import resize, rescale
 from matplotlib import pyplot as plt
 
 symbols_to_keep = dir()
@@ -32,16 +32,22 @@ with open('projetpers/label.txt') as f:
 
 RATIO = 2.3
 
+       
+        
 def generate_neg_imgs(img, H, W, x1, x2, y1, y2):
+    H,W = SAMPLE_SIZE
     
-    ystep = int(img.shape[0] * 0.14)
-    xstep = int(img.shape[1] * 0.14)
-    for y in range(0, img.shape[0] - H, ystep):
-        for x in range(0, img.shape[1] - W, xstep):
-            inter_area_ratio = ((x2-x)*(y2-y))/((x2-x1)*(y2-y1))
-            if inter_area_ratio < 0.1:  
-                window = img[y:y + H, x:x + W]
-                train_negative_image_list.append(resize(window, SAMPLE_SIZE))
+    while img.shape[0]>=H and img.shape[1]>=W:
+        ystep = int(img.shape[0] * 0.15)
+        xstep = int(img.shape[1] * 0.15)
+        for y in range(0, img.shape[0] - H, ystep):
+            for x in range(0, img.shape[1] - W, xstep):
+                inter_area_ratio = ((x2-x)*(y2-y))/((x2-x1)*(y2-y1))
+                if inter_area_ratio < 0.8:  
+                    window = img[y:y + H, x:x + W]
+                    train_negative_image_list.append(window)
+        img = rescale(img, 0.8)
+
 
 
 for i, tmp_img in enumerate(train_image_list):

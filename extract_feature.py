@@ -15,8 +15,8 @@ symbols_to_keep = dir()
 def get_features(img):
     if img.shape[-1]==3:
         img = color.rgb2gray(img)
-    return hog(img, orientations=8, pixels_per_cell=(4, 4), 
-               cells_per_block=(3, 3),block_norm='L2-Hys', transform_sqrt=True)
+    return hog(img, orientations=8, pixels_per_cell=(8, 4), 
+               cells_per_block=(2, 2),block_norm='L2-Hys', transform_sqrt=True)
 
 
 
