@@ -46,17 +46,19 @@ for i in range(0, len(lines)):
     x_c = int((2*x+width)/2)
     y_c = int((2*y+height)/2)
     
-    if height/width < 2.3:
+    if height/width > 2.3:
         height = int(2.3*width)
     else:
         width = int(height/2.3)
     x1 = max(int(x_c - width/2), 0)
     y1 = max(int(y_c - height/2), 0)
-    x2 = max(int(x_c + width/2), max_width)
-    y2 = max(int(y_c + height/2), max_height)
+    x2 = min(int(x_c + width/2), max_width)
+    y2 = min(int(y_c + height/2), max_height)
 
-    cropped_img = tmp_img[y:min(y+height, max_height), x: min(x+width, max_width)]
+    cropped_img = tmp_img[y1: y2, x1: x2]
     resized_img = resize(cropped_img, (128, 64))
+    io.imshow(resized_img)
+    plt.show()
     train_positive_image_list.append(resized_img.reshape(-1))
 
 # create 3 negative images for each raw_image
@@ -81,14 +83,11 @@ for neg_img in train_raw_negative_image_list:
     if height*width > 250:
         
         resized_img = resize(neg_img, (128, 64))
-        io.imshow(resized_img)
-        plt.show()
+        
         train_negative_image_list.append(resized_img.reshape(-1))
         
         
     
-    
-
 y_positive = np.ones(len(train_positive_image_list))
 y_negative = np.zeros(len(train_negative_image_list))
 train_positive_image_list = np.array(train_positive_image_list)
