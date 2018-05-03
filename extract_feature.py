@@ -9,14 +9,31 @@ Created on Mon Apr 30 21:16:49 2018
 
 import numpy as np
 from skimage.feature import hog
-from skimage import color
+from skimage import color,exposure
+
 symbols_to_keep = dir()
+
+#img = X_train[85]
+#_, hog_image = hog(img, orientations=9, pixels_per_cell=(8, 8), 
+#                    cells_per_block=(8, 8),block_norm='L2-Hys', visualise=True)
+#
+#fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+#
+#ax1.axis('off')
+#ax1.imshow(img, cmap=plt.cm.gray)
+#ax1.set_title('Input image')
+## Rescale histogram for better display
+#hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+#ax2.axis('off')
+#ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+#ax2.set_title('Histogram of Oriented Gradients')
+#plt.show()
 
 def get_features(img):
     if img.shape[-1]==3:
         img = color.rgb2gray(img)
-    return hog(img, orientations=8, pixels_per_cell=(8, 4), 
-               cells_per_block=(2, 2),block_norm='L2-Hys', transform_sqrt=True)
+    return hog(img, orientations=9, pixels_per_cell=(8, 8), 
+               cells_per_block=(8, 8),block_norm='L2-Hys', transform_sqrt=True)
 
 
 
