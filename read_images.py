@@ -30,7 +30,7 @@ with open('projetpers/label.txt') as f:
     lines = f.readlines()
     
 
-RATIO = 2
+RATIO = 2.3
 
 for i, tmp_img in enumerate(train_image_list):
     line = lines[i].split(" ")

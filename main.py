@@ -35,11 +35,10 @@ pca = PCA(svd_solver='randomized', n_components=111, whiten=True, random_state=2
 svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf', C=34)
 model = make_pipeline(pca, svc)
 
-model.fit(X_train, Y_train)
-
 s = cross_val_score(model,X_train,Y_train,n_jobs=4)
 print("Accuracy: %0.3f (+/- %0.2f)" % (s.mean(), s.std() * 2))
-print(classification_report(Y_train, model.predict(X_train)))
+
+model.fit(X_train, Y_train)
 
 
 def non_max_suppression(all_areas_list, geometry_info):
