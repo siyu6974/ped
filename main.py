@@ -68,26 +68,22 @@ def non_max_suppression(all_areas_list, geometry_info):
     all_areas_list.append(new_areas_list)
     return all_areas_list
 
-def sliding_window(img, scale_step=1.25):
+def sliding_window(img, scale_step=0.8):
     H,W = SAMPLE_SIZE
+    scale = 1.0
     
-    origin_shape = img.shape
-    scale = max((H/origin_shape[0]), (W/origin_shape[1]))
-    scale = scale*scale_step
-    img = rescale(img, scale)
-    
-    while img.shape[0]<=origin_shape[0] and img.shape[1]<=origin_shape[1]:
+    while img.shape[0]>=H and img.shape[1]>=W:
         ystep = int(img.shape[0] * 0.05)
         xstep = int(img.shape[1] * 0.05)
         for y in range(0, img.shape[0] - H, ystep):
             for x in range(0, img.shape[1] - W, xstep):
                 window = img[y:y + H, x:x + W]
-                yield (int(y/scale), int(x/scale), int(H/scale), int(W/scale)), window
+                yield (int(y*scale), int(x*scale), int(H*scale), int(W*scale)), window
         img = rescale(img, scale_step)
-        scale = scale*scale_step
+        scale = scale/scale_step
             
 test_file_names = sorted(glob.glob('projetpers/test/*.jpg'))
-im=io.imread(test_file_names[4])
+im=io.imread(test_file_names[1])
 geos, patches = zip(*sliding_window(im))
 
 patches_hog = np.array([get_features(patch) for patch in patches])
