@@ -42,7 +42,7 @@ pca = PCA(svd_solver='randomized', n_components=350, whiten=True, random_state=2
 svc = svm.SVC(class_weight='balanced')
 model = make_pipeline(z_scaler, pca, svc)
 
-param_grid = {'svc__C':[0.01, 0.1, 1, 10, 100],
+param_grid = {'svc__C':[0.001, 0.01, 1, 10, 100],
               'svc__gamma':[0.001, 0.01, 0.1, 'auto'],
               'svc__kernel':['linear', 'rbf']}
 grid = GridSearchCV(model, param_grid, n_jobs=8)
@@ -57,18 +57,17 @@ print(grid.best_score_)
 # score=0.899
 
 
-#pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
-##pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
-#svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf')
-#model = make_pipeline(pca, svc)
-#
-#param_grid = {'svc__C':[20,50, 80, 200,500]}
-#grid = GridSearchCV(model, param_grid, n_jobs=8)
-#grid.fit(X_train, Y_train)
-#print(grid.best_params_)
-#print(grid.best_score_)
-#
-#
+z_scaler = StandardScaler()
+pca = PCA(svd_solver='randomized', n_components=350, whiten=True, random_state=233)
+#pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
+svc = svm.SVC(class_weight='balanced',gamma=0.01,kernel='rbf')
+model = make_pipeline(z_scaler, pca, svc)
+
+param_grid = {'svc__C':[20,50,80,100,200]}
+grid = GridSearchCV(model, param_grid, n_jobs=8)
+grid.fit(X_train, Y_train)
+print(grid.best_params_)
+print(grid.best_score_)
 
 clf = grid.best_estimator_
 

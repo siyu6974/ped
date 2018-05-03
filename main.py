@@ -33,7 +33,7 @@ import seaborn as sns
 
 z_scaler = StandardScaler()
 pca = PCA(svd_solver='randomized', n_components=350, whiten=True, random_state=233)
-svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf', C=80)
+svc = svm.SVC(class_weight='balanced', gamma=0.01, kernel='rbf', C=80)
 model = make_pipeline(z_scaler, pca, svc)
 
 s = cross_val_score(model,X_train,Y_train,n_jobs=4,cv=8)
