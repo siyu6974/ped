@@ -22,10 +22,10 @@ def get_features(img):
 
 tmp_X = np.zeros((X_train.shape[0], get_features(X_train[0]).shape[0]))
 
-for i,d in enumerate(X_train):
-    tmp_X[i] = get_features(d)
-    
-X_train = tmp_X
+import concurrent.futures
+
+tmp_X = concurrent.futures.ProcessPoolExecutor().map(get_features,X_train)
+X_train = np.array(list(tmp_X))
     
 # garbage collector
 symbols_to_keep += ['X_train', 'Y_train', 'get_features']
