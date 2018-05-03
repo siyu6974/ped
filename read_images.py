@@ -32,6 +32,18 @@ with open('projetpers/label.txt') as f:
 
 RATIO = 2.3
 
+def generate_neg_imgs(img, H, W, x1, x2, y1, y2):
+    
+    ystep = int(img.shape[0] * 0.14)
+    xstep = int(img.shape[1] * 0.14)
+    for y in range(0, img.shape[0] - H, ystep):
+        for x in range(0, img.shape[1] - W, xstep):
+            inter_area_ratio = ((x2-x)*(y2-y))/((x2-x1)*(y2-y1))
+            if inter_area_ratio < 0.1:  
+                window = img[y:y + H, x:x + W]
+                train_negative_image_list.append(resize(window, SAMPLE_SIZE))
+
+
 for i, tmp_img in enumerate(train_image_list):
     line = lines[i].split(" ")
     x = int(line[1])
@@ -59,21 +71,8 @@ for i, tmp_img in enumerate(train_image_list):
     resized_img = resize(cropped_img, SAMPLE_SIZE)
     
     train_positive_image_list.append(resized_img)
-
-# create 3 negative images for each raw_image
-
-    cropped_img = tmp_img[y2:, x2:]
-    train_raw_negative_image_list.append(cropped_img)  
-      
-    cropped_img = tmp_img[0:x1, 0:y1]
-    train_raw_negative_image_list.append(cropped_img)
-
-    cropped_img = tmp_img[0:x1, y2:]
-    train_raw_negative_image_list.append(cropped_img)
-        
-    cropped_img = tmp_img[x2:, 0:y1]
-    train_raw_negative_image_list.append(cropped_img)
     
+    generate_neg_imgs(tmp_img, height, width, x1, x2, y1, y2)
     
 #delete small negative image
 
