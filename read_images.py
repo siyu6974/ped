@@ -30,7 +30,7 @@ with open('projetpers/label.txt') as f:
     lines = f.readlines()
     
 
-RATIO = 2.3
+RATIO = 2
 
        
         
