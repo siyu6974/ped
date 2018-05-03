@@ -73,8 +73,8 @@ def sliding_window(img, scale_step=0.8):
     scale = 1.0
     
     while img.shape[0]>=H and img.shape[1]>=W:
-        ystep = int(img.shape[0] * 0.05)
-        xstep = int(img.shape[1] * 0.05)
+        ystep = max(int((img.shape[0]-H) * 0.05),1)
+        xstep = max(int((img.shape[1]-W) * 0.05),1)
         for y in range(0, img.shape[0] - H, ystep):
             for x in range(0, img.shape[1] - W, xstep):
                 window = img[y:y + H, x:x + W]
