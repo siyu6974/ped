@@ -20,7 +20,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
-from sklearn.decomposition import RandomizedPCA, PCA
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 #
 #clf = svm.SVC(kernel='linear', C=1)
@@ -31,12 +32,17 @@ from sklearn.decomposition import RandomizedPCA, PCA
 #pca = PCA().fit(X_train)
 #plt.plot(np.cumsum(pca.explained_variance_ratio_))
 
-pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
+#z_scaler = StandardScaler()
+#X_train_z = z_scaler.fit_transform(X_train)
+#pca2 = PCA().fit(X_train_z)
+#plt.plot(np.cumsum(pca2.explained_variance_ratio_))
+z_scaler = StandardScaler()
+pca = PCA(svd_solver='randomized', n_components=350, whiten=True, random_state=233)
 #pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
 svc = svm.SVC(class_weight='balanced')
-model = make_pipeline(pca, svc)
+model = make_pipeline(z_scaler, pca, svc)
 
-param_grid = {'svc__C':[0.001, 0.01, 1, 10, 100],
+param_grid = {'svc__C':[0.01, 0.1, 1, 10, 100],
               'svc__gamma':[0.001, 0.01, 0.1, 'auto'],
               'svc__kernel':['linear', 'rbf']}
 grid = GridSearchCV(model, param_grid, n_jobs=8)
@@ -51,18 +57,18 @@ print(grid.best_score_)
 # score=0.899
 
 
-pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
-#pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
-svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf')
-model = make_pipeline(pca, svc)
-
-param_grid = {'svc__C':[20,50, 80, 200,500]}
-grid = GridSearchCV(model, param_grid, n_jobs=8)
-grid.fit(X_train, Y_train)
-print(grid.best_params_)
-print(grid.best_score_)
-
-
+#pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
+##pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
+#svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf')
+#model = make_pipeline(pca, svc)
+#
+#param_grid = {'svc__C':[20,50, 80, 200,500]}
+#grid = GridSearchCV(model, param_grid, n_jobs=8)
+#grid.fit(X_train, Y_train)
+#print(grid.best_params_)
+#print(grid.best_score_)
+#
+#
 
 clf = grid.best_estimator_
 

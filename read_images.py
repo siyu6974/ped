@@ -46,7 +46,7 @@ def generate_neg_imgs(img, H, W, x1, x2, y1, y2):
                 if inter_area_ratio < 0.8:  
                     window = img[y:y + H, x:x + W]
                     train_negative_image_list.append(window)
-        img = rescale(img, 0.8)
+        img = rescale(img, 0.8, mode='constant')
 
 
 

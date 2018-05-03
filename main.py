@@ -25,18 +25,19 @@ from sklearn.pipeline import make_pipeline
 from sklearn.decomposition import RandomizedPCA, PCA
 from skimage.transform import rescale
 import glob
+from sklearn.preprocessing import StandardScaler
 
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 
 
-pca = PCA(svd_solver='randomized', n_components=200, whiten=True, random_state=233)
-#pca = RandomizedPCA(n_components=111, whiten=True, random_state=23)
+z_scaler = StandardScaler()
+pca = PCA(svd_solver='randomized', n_components=350, whiten=True, random_state=233)
 svc = svm.SVC(class_weight='balanced', gamma=0.1, kernel='rbf', C=80)
-model = make_pipeline(pca, svc)
+model = make_pipeline(z_scaler, pca, svc)
 
 s = cross_val_score(model,X_train,Y_train,n_jobs=4,cv=8)
-print("Accuracy: %0.3f (+/- %0.2f)" % (s.mean(), s.std() * 2))
+print("Accuracy: %0.3f (+/- %0.3f)" % (s.mean(), s.std() * 2))
 
 model.fit(X_train, Y_train)
 
@@ -79,7 +80,7 @@ def sliding_window(img, scale_step=0.8):
             for x in range(0, img.shape[1] - W, xstep):
                 window = img[y:y + H, x:x + W]
                 yield (int(y/scale), int(x/scale), int(H/scale), int(W/scale)), window
-        img = rescale(img, scale_step)
+        img = rescale(img, scale_step, mode='constant')
         scale = scale*scale_step
             
 test_file_names = sorted(glob.glob('projetpers/test/*.jpg'))
