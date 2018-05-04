@@ -26,6 +26,7 @@ def non_max_suppression(all_areas_list, geometry_info):
     m_y1 = geometry_info[1]
     m_x2 = geometry_info[0]+geometry_info[2]
     m_y2 = geometry_info[1]+geometry_info[3]
+    s = geometry_info[4]
     
     # the centre of the window
     m_x_center = (m_x1 + m_x2)/2
@@ -35,10 +36,9 @@ def non_max_suppression(all_areas_list, geometry_info):
         # check if the centre of a window is in an area         
         if areas_list["x1"]<m_x_center and areas_list["x2"]>m_x_center and areas_list["y1"]<m_y_center and areas_list["y2"]>m_y_center:
             areas_list["areas"].append(geometry_info)
-        #TODO compare score
             return all_areas_list
         
-    new_areas_list = {"x1":m_x1, "x2":m_x2, "y1":m_y1, "y2":m_y2}
+    new_areas_list = {"x1":m_x1, "x2":m_x2, "y1":m_y1, "y2":m_y2, "s":s}
     new_areas_list["areas"] = []
     new_areas_list["areas"].append(geometry_info)
     all_areas_list.append(new_areas_list)
@@ -64,10 +64,11 @@ def test_with_file(file_num=0, output=None):
     test_file_names = sorted(glob.glob('projetpers/test/*.jpg'))
     im=io.imread(test_file_names[file_num])
     geos, patches = zip(*sliding_window(im))
+    geos = np.array(list(geos)) 
     
     patches_hog = np.array([get_features(patch) for patch in patches])
     labels = model.predict(patches_hog)
-        
+    scores = model.decision_function(patches_hog)*-1
     
     all_areas_list = []
     
@@ -75,10 +76,15 @@ def test_with_file(file_num=0, output=None):
     fig, ax = plt.subplots()
     ax.imshow(im, cmap='gray')
     ax.axis('off')
-    for y, x, h, w in geos[labels==1]:
+    
+    infos = np.hstack((geos,scores[:,None])) 
+
+    idx = np.argsort(scores)
+    infos = infos[idx]
+    for y, x, h, w, s in infos[labels[idx]==1]:
         ax.add_patch(plt.Rectangle((x, y), w, h, edgecolor='red',
                                    alpha=0.3, lw=2, facecolor='none'))
-        all_areas_list = non_max_suppression(all_areas_list, (x,y,w,h))
+        all_areas_list = non_max_suppression(all_areas_list, (x,y,w,h,s))
     plt.show()
     
     
@@ -90,17 +96,20 @@ def test_with_file(file_num=0, output=None):
         y = area['y1']
         w = area['x2'] - area['x1']
         h = area['y2'] - area['y1']
+        s = area['s']
         ax.add_patch(plt.Rectangle((x, y), w, h, edgecolor='red',
                                    alpha=0.3, lw=2, facecolor='none'))
+        if output is not None:
+            output.write(f'{file_num} {x} {y} {w} {h} {s}')
         
 
 if 'model' not in globals(): 
     SAMPLE_SIZE = (128,64) 
     model = joblib.load('m_model.pkl')   
-
-with open("Output.txt", "w") as text_file: 
-    test_with_file(1, text_file) 
-    
+#
 #with open("Output.txt", "w") as text_file: 
-#    for test_img_num in len(glob.glob('projetpers/test/*.jpg')): 
-#        test_with_file(test_img_num, text_file) 
+#    test_with_file(1, text_file) 
+#    
+with open("Output.txt", "w") as text_file: 
+    for test_img_num in range(len(glob.glob('projetpers/test/*.jpg'))): 
+        test_with_file(test_img_num, text_file) 
