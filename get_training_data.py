@@ -5,6 +5,7 @@ Created on Fri Apr 27 22:45:47 2018
 
 @author: aoao
 """
+SAMPLE_SIZE = (128,64) 
 
 
 from skimage import io, util, color

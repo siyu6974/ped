@@ -3,7 +3,7 @@
 """
 Created on Fri May  4 01:14:43 2018
 
-@author: laurent
+@author: Siyu Zhang
 """
 from sklearn.externals import joblib 
 from sklearn.model_selection import cross_val_score

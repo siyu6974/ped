@@ -7,7 +7,7 @@ Created on Sun Apr 29 15:58:49 2018
 """
 SAMPLE_SIZE = (128,64)
 
-runfile('read_images.py')
+runfile('get_training_data.py') 
 runfile('extract_feature.py')
 
 
