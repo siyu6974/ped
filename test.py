@@ -100,7 +100,7 @@ def test_with_file(file_num=0, output=None):
         ax.add_patch(plt.Rectangle((x, y), w, h, edgecolor='red',
                                    alpha=0.3, lw=2, facecolor='none'))
         if output is not None:
-            output.write(f'{file_num} {x} {y} {w} {h} {s}')
+            output.write(f'{file_num} {x} {y} {w} {h} {s}\n')
         
 
 if 'model' not in globals(): 
