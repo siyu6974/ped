@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
 
+from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
+
 
 train_pers_p = glob.glob('../imagepers/train/pos/*.png')
 train_pers_p_float = np.zeros((800,30240))
