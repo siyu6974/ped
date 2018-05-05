@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 from skimage.transform import rescale
 import glob
 from skimage import io
+import concurrent.futures
 
 
 
@@ -66,7 +67,9 @@ def test_with_file(file_num=0, output=None):
     geos, patches = zip(*sliding_window(im))
     geos = np.array(list(geos)) 
     
-    patches_hog = np.array([get_features(patch) for patch in patches])
+    tmp = concurrent.futures.ProcessPoolExecutor().map(get_features,patches)
+    patches_hog = np.array(list(tmp))
+    
     labels = model.predict(patches_hog)
     scores = model.decision_function(patches_hog)*-1
     
